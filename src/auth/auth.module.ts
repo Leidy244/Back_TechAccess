@@ -10,10 +10,31 @@ import config from '../config';
 import { ModulesGuard } from './guards/modules.guard.guard';
 import { JwtAuthGuard } from './guards/auth.guard';
 
+// 1. Importa el MailerModule
+import { MailerModule } from '@nestjs-modules/mailer';
+
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    // 2. Configuración del MailerModule
+    MailerModule.forRootAsync({
+      inject: [config.KEY],
+      useFactory: (configType: ConfigType<typeof config>) => ({
+        transport: {
+          host: 'smtp.gmail.com', // O el host que uses
+          port: 465,
+          secure: true, // true para puerto 465
+          auth: {
+            user: 'senatechaccess@gmail.com', // Podrías traerlo de configType si lo añades
+            pass: 'fvth nmyw vzez ufpn',
+          },
+        },
+        defaults: {
+          from: '"TechAccess Support" <senatechaccess@gmail.com>',
+        },
+      }),
+    }),
     JwtModule.registerAsync({
       inject: [config.KEY],
       useFactory: (configType: ConfigType<typeof config>) => ({

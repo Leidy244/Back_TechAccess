@@ -80,7 +80,7 @@ export class UsersService {
             });
             const savedUser = await queryRunner.manager.save(newUser);
 
-            
+
 
             await queryRunner.commitTransaction();
             return savedUser;
@@ -115,11 +115,11 @@ export class UsersService {
         }
 
         if (fichasId !== undefined) {
-          if (fichasId === null) {
-            user.fichas = null;
-          } else {
-            user.fichas = await this.fichaService.findOne(fichasId);
-          }
+            if (fichasId === null) {
+                user.fichas = null;
+            } else {
+                user.fichas = await this.fichaService.findOne(fichasId);
+            }
         }
 
         if (password) {
@@ -143,5 +143,22 @@ export class UsersService {
             throw new NotFoundException(`User #${idUser} not found`);
         }
         return { message: 'User deleted successfully' };
+    }
+
+    // src/features/users/services/users/users.service.ts
+
+    async updatePassword(email: string, password: string) {
+        // Buscamos al usuario
+        const user = await this.findByEmail(email);
+
+        if (!user) {
+            throw new NotFoundException('Usuario no encontrado');
+        }
+
+        // Actualizamos solo la contraseña
+        user.password = password;
+
+        // Guardamos los cambios en PostgreSQL
+        return await this.userRepo.save(user);
     }
 }
