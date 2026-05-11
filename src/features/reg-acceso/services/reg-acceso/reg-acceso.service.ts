@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Acceso } from '../../entities/acceso.entity';
 import { CreateAccesoDto, UpdateAccesoDto } from '../../dtos/acceso.dto';
 
@@ -12,9 +12,38 @@ export class RegAccesoService {
   ) {}
 
   async create(createAccesoDto: CreateAccesoDto): Promise<Acceso> {
+    
+  
+    const inicioDia = new Date();
+    inicioDia.setHours(0, 0, 0, 0);
+
+    const finDia = new Date();
+    finDia.setHours(23, 59, 59, 999);
+
+    const ultimoAcceso = await this.accesoRepository.findOne({
+      where: {
+        usuario: {
+          id: createAccesoDto.usuarioId,
+        },
+        horaFecha: Between(inicioDia, finDia),
+      },
+      order: {
+        horaFecha: 'DESC',
+      },
+      relations: ['usuario'],
+    });
+ 
+    const nuevaAccion = ultimoAcceso
+      ? !ultimoAcceso.accion
+      : true;
+
     const acceso = this.accesoRepository.create({
-      ...createAccesoDto,
-      horaIngreso: new Date(),
+      horaFecha: new Date(),
+      accion: nuevaAccion,
+      observacion: createAccesoDto.observacion,
+      usuario: {
+        id: createAccesoDto.usuarioId,
+      },
     });
     return this.accesoRepository.save(acceso);
   }

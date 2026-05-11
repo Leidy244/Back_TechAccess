@@ -7,13 +7,10 @@ export class Acceso {
   id!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  horaIngreso!: Date;
+  horaFecha!: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
-  horaSalida!: Date;
-
-  @Column({ type: 'date', default: () => 'CURRENT_DATE' }) 
-  fecha!: Date;
+  @Column({ type: 'boolean'}) 
+  accion!: boolean;
 
   @Column({ nullable: true })
   observacion!: string;
