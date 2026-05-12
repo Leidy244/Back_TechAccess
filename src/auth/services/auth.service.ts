@@ -33,21 +33,20 @@ export class AuthService {
         const payload = {
             sub: user.id,
             email: user.email,
-            // Importante: Asegúrate de que user.roles exista en el objeto user
-            // roles: user.roles ? user.roles.map(r => r.name) : [],
         };
+
+        const userWithRoles = await this.usersService.findOne(user.id);
 
         return {
             access_token: this.jwtService.sign(payload),
-            user,
+            user: userWithRoles, 
         };
     }
 
     async checkStatus(user: UserModel) {
 
-        const id = user.id; // 'sub' es el campo que usamos para el ID del usuario en el payload
+        const id = user.id;
         const dbUser = await this.usersService.findOne(id);
-        // Usamos 'sub' para que la estrategia pueda encontrarlo después
         const payload = {
             sub: dbUser.id,
             email: dbUser.email
@@ -69,10 +68,9 @@ export class AuthService {
             const recoveryToken = this.jwtService.sign(payload, { expiresIn: '15m' });
 
             // 2. Creas la URL que apunta a tu FRONTEND de Angular
-            // Asegúrate de que el puerto sea el que usa tu Angular (4200 es el normal)
             const recoveryUrl = `http://localhost:4200/auth/reset-password?token=${recoveryToken}`;
 
-            // 3. Envías el correo con el link de verdad
+            // 3. Envías el correo con el link de recuperación
             this.mailerService.sendMail({
                 to: user.email,
                 subject: 'Recuperación de contraseña - TechAccess',
@@ -109,7 +107,6 @@ export class AuthService {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
 
             // 3. Actualizar en la base de datos (PostgreSQL)
-            // Asegúrate de tener este método en tu usersService
             return await this.usersService.updatePassword(payload.email, hashedPassword);
         } catch (error) {
             throw new UnauthorizedException('El enlace ha expirado o es inválido');

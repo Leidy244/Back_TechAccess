@@ -1,5 +1,6 @@
-import { Role } from 'src/features/roles/entities/role.entity';
+
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { Role } from '../../features/roles/entities/role.entity';
 
 @Entity('modules')
 export class ModuleEntity {
