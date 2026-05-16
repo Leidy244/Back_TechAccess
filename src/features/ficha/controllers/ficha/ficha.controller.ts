@@ -56,6 +56,13 @@ export class FichaController {
     return this.fichaService.findByNumFicha(numFicha);
   }
 
+  @Get(':id/aprendices')
+  @ApiOperation({ summary: 'Obtener aprendices de una ficha específica' })
+  @ApiParam({ name: 'id', type: Number, description: 'ID de la ficha' })
+  getAprendices(@Param('id', ParseIntPipe) id: number) {
+    return this.fichaService.findAprendices(id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una ficha por ID' })
   @ApiParam({ name: 'id', type: Number, example: 1, description: 'ID de la ficha' })
@@ -86,12 +93,5 @@ export class FichaController {
     @Query('soft', new DefaultValuePipe(true), ParseBoolPipe) soft: boolean,
   ) {
     return this.fichaService.remove(id, soft);
-  }
-
-  @Get(':id/aprendices')
-  @ApiOperation({ summary: 'Obtener aprendices de una ficha específica' })
-  @ApiParam({ name: 'id', type: Number, description: 'ID de la ficha' })
-  getAprendices(@Param('id', ParseIntPipe) id: number) {
-    return this.fichaService.findAprendices(id);
   }
 }

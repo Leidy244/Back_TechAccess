@@ -158,8 +158,9 @@ export class FichaService {
     }
 
     // Retorna solo los usuarios que tienen el rol 'Aprendiz'
-    return ficha.users.filter(user => 
-      user.roles.some(role => role.name.toUpperCase() === 'APRENDIZ')
+    const users = ficha.users || [];
+    return users.filter(user => 
+      user.roles?.some(role => role.name.toUpperCase() === 'APRENDIZ')
     );
   }
 }

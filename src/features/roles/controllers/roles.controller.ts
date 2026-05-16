@@ -11,6 +11,8 @@ import {
     NotFoundException,
     BadRequestException,
     UseGuards,
+    Query,
+    DefaultValuePipe,
 } from '@nestjs/common';
 import { RolesService } from '../services/roles.service';
 import { CreateRoleDto, UpdateRoleDto } from '../dtos/role.dto';
@@ -41,8 +43,11 @@ export class RolesController {
     // Listar todos los roles
     @Get()
     @ApiOperation({ summary: 'Get all roles' })
-    async findAll() {
-        return this.rolesService.findAll();
+    async findAll(
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit: number,
+    ) {
+        return this.rolesService.findAll({ page, limit });
     }
 
     // Obtener un rol por id

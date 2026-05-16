@@ -4,18 +4,30 @@ export class AccesoV21778527283679 implements MigrationInterface {
     name = 'AccesoV21778527283679'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        // 1. Limpieza de lo viejo
         await queryRunner.query(`ALTER TABLE "accesos" DROP CONSTRAINT IF EXISTS "FK_accesos_usuario"`);
+        // LÍNEA CRÍTICA: Borramos la FK conflictiva antes de intentar crearla
+        await queryRunner.query(`ALTER TABLE "accesos" DROP CONSTRAINT IF EXISTS "FK_e993885e08b45e880466359a58f"`);
+        
         await queryRunner.query(`DROP INDEX IF EXISTS "public"."IDX_accesos_usuarioId"`);
         await queryRunner.query(`DROP INDEX IF EXISTS "public"."IDX_accesos_fecha"`);
+        
+        // 2. Manejo de columnas (con IF EXISTS para mayor seguridad)
         await queryRunner.query(`ALTER TABLE "accesos" DROP COLUMN IF EXISTS "horaIngreso"`);
         await queryRunner.query(`ALTER TABLE "accesos" DROP COLUMN IF EXISTS "horaSalida"`);
         await queryRunner.query(`ALTER TABLE "accesos" DROP COLUMN IF EXISTS "fecha"`);
+        
+        // 3. Nuevas columnas
         await queryRunner.query(`ALTER TABLE "accesos" ADD "horaFecha" TIMESTAMP NOT NULL DEFAULT now()`);
         await queryRunner.query(`ALTER TABLE "accesos" ADD "accion" boolean NOT NULL`);
+        
+        // 4. Alteraciones de tablas existentes
         await queryRunner.query(`ALTER TABLE "accesos" ALTER COLUMN "usuarioId" DROP NOT NULL`);
         await queryRunner.query(`ALTER TABLE "user" ALTER COLUMN "telephone" DROP NOT NULL`);
         await queryRunner.query(`ALTER TABLE "user" ALTER COLUMN "FamTelephone" DROP NOT NULL`);
         await queryRunner.query(`ALTER TABLE "user" ALTER COLUMN "state" SET DEFAULT 'activo'`);
+        
+        // 5. Creación de la FK (Ahora sí funcionará)
         await queryRunner.query(`ALTER TABLE "accesos" ADD CONSTRAINT "FK_e993885e08b45e880466359a58f" FOREIGN KEY ("usuarioId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
     }
 

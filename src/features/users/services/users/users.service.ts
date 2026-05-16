@@ -17,8 +17,19 @@ export class UsersService {
         private dataSource: DataSource,
     ) { }
 
-    async findAll() {
-        return await this.userRepo.find({ relations: ['roles', 'fichas'] });
+    async findAll(options?: { page?: number; limit?: number }) {
+        const page = options?.page || 1;
+        const limit = options?.limit || 100;
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.userRepo.findAndCount({
+            relations: ['roles', 'fichas'],
+            skip,
+            take: limit,
+            order: { id: 'DESC' },
+        });
+
+        return { data, total, page, limit };
     }
 
     async findByEmail(email: string) {

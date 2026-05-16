@@ -34,8 +34,18 @@ export class RolesService {
     }
 
 
-    async findAll() {
-        return this.roleRepo.find();
+    async findAll(options?: { page?: number; limit?: number }) {
+        const page = options?.page || 1;
+        const limit = options?.limit || 100;
+        const skip = (page - 1) * limit;
+
+        const [data, total] = await this.roleRepo.findAndCount({
+            skip,
+            take: limit,
+            order: { id: 'DESC' },
+        });
+
+        return { data, total, page, limit };
     }
 
 

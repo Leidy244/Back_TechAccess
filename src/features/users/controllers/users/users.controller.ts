@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards, Query, DefaultValuePipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Modules } from 'src/auth/decorators/modules.decorator';
@@ -16,8 +16,11 @@ export class UsersController {
     constructor(private usersService: UsersService){}
 
     @Get()
-    getUsers() {
-        return this.usersService.findAll();
+    getUsers(
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit: number,
+    ) {
+        return this.usersService.findAll({ page, limit });
     }
 
     @Get(':userId')

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards, Req, Query, DefaultValuePipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Modules } from 'src/auth/decorators/modules.decorator';
@@ -16,8 +16,11 @@ export class VehiculosController {
     constructor(private vehiculosService: VehiculosService){}
 
     @Get()
-    getVehiculo(){
-        return this.vehiculosService.findAll();
+    getVehiculo(
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit: number,
+    ){
+        return this.vehiculosService.findAll({ page, limit });
     }
 
     @Get(':vehiId')

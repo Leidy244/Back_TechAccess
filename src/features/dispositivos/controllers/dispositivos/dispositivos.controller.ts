@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, UseGuards, Param, ParseIntPipe, Req, Body, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, UseGuards, Param, ParseIntPipe, Req, Body, Patch, Query, DefaultValuePipe } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Modules } from 'src/auth/decorators/modules.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
@@ -17,8 +17,11 @@ export class DispositivosController {
     constructor(private DispositivosService: DispositivosService) {}
 
     @Get()
-    getVehiculo(){
-        return this.DispositivosService.findAll();
+    getVehiculo(
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit: number,
+    ){
+        return this.DispositivosService.findAll({ page, limit });
     }
 
     @Get(':dispoId')
