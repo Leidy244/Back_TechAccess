@@ -28,6 +28,7 @@
     "seed": "npx ts-node -r tsconfig-paths/register ./src/scripts/seed.ts"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^2.1.1",
     "@nestjs-modules/mailer": "^2.3.4",
     "@nestjs/common": "^11.1.17",
     "@nestjs/config": "^4.0.2",
@@ -50,6 +51,7 @@
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.28"
+    
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -97,4 +99,5 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }
+  
 }
